@@ -10,7 +10,7 @@ You can also download the source from the src directory and run main.py directly
 <details>
   <summary>Info for running on python</summary>
   
-- Python Version: 3.14
+- Python Version: 3.13
 - Dependencies:
   - pillow
   - numpy
