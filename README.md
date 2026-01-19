@@ -17,7 +17,7 @@ You can also download the source from the src directory and run main.py directly
   - struct
 - Optional Dependencies:
   - imagequant (**Strongly** recommended)
-  - tkinterdnd2
+  - tkinterdnd2 (Drag & Drop)
 
 </details>
 
