@@ -26,4 +26,5 @@ WIP
 
 # Known issues
 
-- MHUMM4 is broken because it's structure is different from other STI files, no plans to fix it.
+- MHUMM4 is broken
+  - because it's structure is different from other STI files, no plans to fix it.
