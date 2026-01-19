@@ -16,7 +16,7 @@ You can also download the source from the src directory and run main.py directly
   - numpy
   - struct
 - Optional Dependencies:
-  - imagequant (Strongly recommended)
+  - imagequant (**Strongly** recommended)
   - tkinterdnd2
 
 </details>
@@ -24,3 +24,6 @@ You can also download the source from the src directory and run main.py directly
 # Usage
 WIP
 
+# Known issues
+
+- MHUMM4 is broken because it's structure is different from other STI files, no plans to fix it.
