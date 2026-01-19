@@ -31,4 +31,4 @@ WIP
 - Importing small portraits for RPCs is broken
   - Something is going wrong when repackaging it, might fix it someday but it doesn't really matter since you **never** see those pictures in-game anyways, they only appear in the main menu, during party creation I think.
 - Drag & Drop can be wonky on wayland
-  - Wayland is broken, who could have guessed?
+  - Wayland is broken, who could have guessed? Just use the change portrait filedialog instead if you've got problems.
