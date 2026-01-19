@@ -14,11 +14,10 @@ You can also download the source from the src directory and run main.py directly
 - Dependencies:
   - pillow
   - numpy
-  - tkinterdnd2
   - struct
 - Optional Dependencies:
-  - libimagequant
-
+  - imagequant (Strongly recommended)
+  - tkinterdnd2
 
 </details>
 
