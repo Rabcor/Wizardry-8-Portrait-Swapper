@@ -30,3 +30,5 @@ WIP
   - because it's structure is different from other STI files, no plans to fix it.
 - Importing small portraits for RPCs is broken
   - Something is going wrong when repackaging it, might fix it someday but it doesn't really matter since you **never** see those pictures in-game anyways, they only appear in the main menu, during party creation I think.
+- Drag & Drop can be wonky on wayland
+  - Just normal wayland things, why are we using this again?
