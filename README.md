@@ -1,6 +1,8 @@
 # Wizardry 8 Portrait Swapper
 Now you can swap the portraits in Wizardry 8 with less pain.
 
+![ps](https://github.com/user-attachments/assets/0ba54401-3961-4649-81a1-4a58029abf4a)
+
 # Installation
 Download the executable from the release section and just run it.
 
@@ -22,7 +24,17 @@ You can also download the source from the src directory and run main.py directly
 </details>
 
 # Usage
-WIP
+
+The program looks for your wizardry 8 game directory in it's current directory, up one directory and the default steam install locations on linux and windows.
+
+- Create your portraits, save them as standard 24-bit PNGs
+- Drag and drop or use the change portraits file dialog to import the images
+- Press save and that's it.
+
+Portraits come in 3 sizes
+- Large: 180x144
+- Medium: 90x72
+- Small: 45x36
 
 # Known issues
 
