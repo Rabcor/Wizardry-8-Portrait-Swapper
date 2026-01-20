@@ -29,12 +29,16 @@ The program looks for your wizardry 8 game directory in it's current directory, 
 
 - Create your portraits, save them as standard 24-bit PNGs
 - Drag and drop or use the change portraits file dialog to import the images
+- Medium portrait animation frames can be imported one at a time, if one medium size image is imported, it will overwrite the currently selected frame.
 - Press save and that's it.
 
 Portraits come in 3 sizes
 - Large: 180x144
 - Medium: 90x72
 - Small: 45x36
+
+More detailed guide:
+https://steamcommunity.com/sharedfiles/filedetails/?id=3641128848
 
 # Known issues
 
