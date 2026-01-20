@@ -1,7 +1,7 @@
 # Wizardry 8 Portrait Swapper
 Now you can swap the portraits in Wizardry 8 without the pain.
 
-![ps](https://github.com/user-attachments/assets/0ba54401-3961-4649-81a1-4a58029abf4a)
+![ps2](https://github.com/user-attachments/assets/102ea1a6-89d4-4942-80b1-98dbd506153f)
 
 # Installation
 Download the executable from the release section and just run it. The .exe is obviously for windows, the binary without an extension is for linux.
@@ -32,10 +32,14 @@ The program looks for your wizardry 8 game directory in it's current directory, 
 - Medium portrait animation frames can be imported one at a time, if one medium size image is imported, it will overwrite the currently selected frame.
 - Press save and that's it.
 
+![Demo](https://github.com/user-attachments/assets/5fdb8251-5093-417d-811a-de768aa65d44)
+
+
 Portraits come in 3 sizes
 - Large: 180x144
 - Medium: 90x72
 - Small: 45x36
+
 
 More detailed guide:
 https://steamcommunity.com/sharedfiles/filedetails/?id=3641128848
