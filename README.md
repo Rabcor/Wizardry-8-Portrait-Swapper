@@ -16,7 +16,6 @@ You can also download the source from the src directory and run main.py directly
 - Dependencies:
   - pillow
   - numpy
-  - struct
 - Optional Dependencies:
   - imagequant (**Strongly** recommended)
   - tkinterdnd2 (Drag & Drop)
