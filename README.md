@@ -4,7 +4,7 @@ Now you can swap the portraits in Wizardry 8 with less pain.
 ![ps](https://github.com/user-attachments/assets/0ba54401-3961-4649-81a1-4a58029abf4a)
 
 # Installation
-Download the executable from the release section and just run it.
+Download the executable from the release section and just run it. The .exe is obviously for windows, the binary without an extension is for linux.
 
 You can also download the source from the src directory and run main.py directly with python.
 
