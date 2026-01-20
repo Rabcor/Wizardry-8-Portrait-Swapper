@@ -1,5 +1,5 @@
 # Wizardry 8 Portrait Swapper
-Now you can swap the portraits in Wizardry 8 with less pain.
+Now you can swap the portraits in Wizardry 8, but without the pain.
 
 ![ps](https://github.com/user-attachments/assets/0ba54401-3961-4649-81a1-4a58029abf4a)
 
