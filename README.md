@@ -28,7 +28,7 @@ You can also download the source and run main.py directly with python.
 The program looks for your wizardry 8 game directory in it's current directory, up one directory and the default steam install locations on linux and windows.
 
 - Create your portraits, save them as standard 24-bit PNGs
-- Drag and drop or use the change portraits file dialog to import the images
+- Drag and drop or use the change portraits file dialog to import the images, multiple/all images can be imported simultaneously.
 - Medium portrait animation frames can be imported one at a time, if one medium size image is imported, it will overwrite the currently selected frame.
 - Press save and that's it.
 
