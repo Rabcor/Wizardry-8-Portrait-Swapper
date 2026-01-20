@@ -6,8 +6,9 @@ Now you can swap the portraits in Wizardry 8 without the pain.
 # Installation
 Download the executable from the release section and just run it. The .exe is obviously for windows, the binary without an extension is for linux.
 
-You can also download the source from the src directory and run main.py directly with python.
+They were compiled with `pyinstaller --onefile --hidden-import='PIL._tkinter_finder' --collect-all imagequant --noupx --noconsole main.py`
 
+You can also download the source and run main.py directly with python.
 
 <details>
   <summary>Info for running on python</summary>
