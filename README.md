@@ -47,9 +47,9 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=3641128848
 # Known issues
 
 - MHUMM4 is broken
-  - because it's structure is different from other STI files, no plans to fix it.
+  - because it uses offsets instead of transparency to position the anim data, currently no plans to fix it.
 - Importing small portraits for RPCs is broken
-  - Something is going wrong when repackaging it, might fix it someday but it doesn't really matter since you **never** see those pictures in-game anyways, they only appear in the main menu, during party creation I think.
+  - Fixed in source, but still broken in release.
 - Drag & Drop can be wonky on wayland
   - Wayland is broken, who could have guessed? Just use the change portrait filedialog instead if you've got problems, this kind of scenario is what it's there for.
 
