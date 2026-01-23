@@ -236,24 +236,22 @@ class GUI:
                 self.cached_keys[1] = f"PORTRAITS\\MEDIUM\\A{name}.STI" if name in special_names else f"PORTRAITS\\MEDIUM\\M{name}.STI"
                 
                 self.cached_keys[2] = f"PORTRAITS\\SMALL\\S{name}.STI"
-     
-                # Large portrait                                                
-                self.loaded_sti[0] = STI16(self.modded_portraits.get(self.cached_keys[0]) or self.default_portraits[self.cached_keys[0]])
-                self.display_image(self.loaded_sti[0].image, self.large_canvas, self.loaded_sti[0].width, self.loaded_sti[0].height)
                 
-                # Medium portrait
-                self.loaded_sti[1] = STI8(self.modded_portraits.get(self.cached_keys[1]) or self.default_portraits[self.cached_keys[1]])
-                self.medium_image_count = self.loaded_sti[1].num_images
-                self.display_image(self.loaded_sti[1].images, self.medium_canvas, self.loaded_sti[1].sub_header[self.medium_image_index]['width'], self.loaded_sti[1].sub_header[self.medium_image_index]['height'])
-                self.alpha_value['text'] = '#{:02x}{:02x}{:02x}'.format(*self.loaded_sti[1].palette[0])
-                self.alpha_value.config(fg=self.alpha_value['text'])
-                # Small portrait
-                if name in special_names:
-                    self.loaded_sti[2] = STI8(self.modded_portraits.get(self.cached_keys[2]) or self.default_portraits[self.cached_keys[2]])
-                    self.display_image(self.loaded_sti[2].images, self.small_canvas, self.loaded_sti[2].sub_header[0]['width'], self.loaded_sti[2].sub_header[0]['height'])
-                else:
-                    self.loaded_sti[2] = STI16(self.modded_portraits.get(self.cached_keys[2]) or self.default_portraits[self.cached_keys[2]])
-                    self.display_image(self.loaded_sti[2].image, self.small_canvas, self.loaded_sti[2].width, self.loaded_sti[2].height)
+                for i, key in enumerate(self.cached_keys):
+                    data = self.modded_portraits.get(key) or self.default_portraits[key]
+                    flags = int.from_bytes(data[16:20], 'little')
+                    transparent, high, indexed, zlib, etrle = ((flags >> i) & 1 for i in (0, 2, 3, 4, 5))
+                    canvas = [self.large_canvas, self.medium_canvas, self.small_canvas][i]
+                    if high:
+                        self.loaded_sti[i] = STI16(data)
+                        image = self.loaded_sti[i].image
+                        width, height = self.loaded_sti[i].width, self.loaded_sti[i].height
+                    elif indexed:
+                        self.loaded_sti[i] = STI8(data)
+                        image = self.loaded_sti[i].images
+                        width, height = self.loaded_sti[i].sub_header[0]['width'], self.loaded_sti[i].sub_header[0]['height']
+                    
+                    self.display_image(image, canvas, width, height)
             else:
                 # Cycle medium portraits (when slider is moved)
                 self.medium_image_count = self.loaded_sti[1].num_images
@@ -270,11 +268,20 @@ class GUI:
             if isinstance(image_data, list):
                 img = Image.new('RGBA', (width, height))
                 index = min(self.medium_image_index, len(image_data) - 1)
-                img.putdata([(r, g, b, a) for r, g, b, a in zip(image_data[index][::4], image_data[index][1::4], image_data[index][2::4], image_data[index][3::4])])
-                if self.medium_image_index != 0: 
-                    # Render the base portrait underneath the anims, like it would be in the game.
+                
+                if len(image_data[index]) == width * height * 4:
+                    img.putdata([(r, g, b, a) for r, g, b, a in zip(image_data[index][::4], image_data[index][1::4], image_data[index][2::4], image_data[index][3::4])])
+                elif len(image_data[index]) == width * height * 3:
+                    img.putdata([(r, g, b, 255) for r, g, b in zip(image_data[index][::3], image_data[index][1::3], image_data[index][2::3])])
+                else:
+                    img = Image.new('RGBA', (width, height), (255, 0, 0, 255))
+                
+                if self.medium_image_index != 0:
                     base_img = Image.new('RGBA', (width, height))
-                    base_img.putdata([(r, g, b, a) for r, g, b, a in zip(image_data[0][::4], image_data[0][1::4], image_data[0][2::4], image_data[0][3::4])])
+                    if len(image_data[0]) == width * height * 4:
+                        base_img.putdata([(r, g, b, a) for r, g, b, a in zip(image_data[0][::4], image_data[0][1::4], image_data[0][2::4], image_data[0][3::4])])
+                    else:
+                        base_img = Image.new('RGBA', (width, height), (0, 0, 0, 255))
                     img = Image.alpha_composite(base_img, img)
             else:
                 img = Image.new('RGB', (width, height))
@@ -288,6 +295,8 @@ class GUI:
             print(f"Error displaying image: {str(e)}")
             canvas.delete("all")
             canvas.create_text(width//2, height//2, text="Error loading image")
+
+
 
     def clear_canvas(self, canvas):
         canvas.delete("all")
@@ -313,7 +322,7 @@ class GUI:
         
         # Process each file
         for file_path in files:
-            filenamename, extension = os.path.splitext(file_path)
+            filename, extension = os.path.splitext(file_path)
             if extension.lower() == '.png':
                 try:
                     img = Image.open(file_path)
@@ -352,23 +361,23 @@ class GUI:
                     messagebox.showerror("Error", f"Failed to process file {file_path}: {str(e)}")
             elif extension.lower() == '.sti':
                 try:
-                    buffer = STI16(file_path)
-                    if buffer.width == 180 and buffer.height == 144:
-                        self.loaded_sti[0] = buffer
+                    with open(file_path, 'rb') as file:
+                        file_bytes = file.read()
+                    flags = int.from_bytes(file_bytes[16:20], 'little')
+                    transparent, high, indexed, zlib, etrle = ((flags >> i) & 1 for i in (0, 2, 3, 4, 5))      
+                    sti = STI16(file_path) if high else STI8(file_path) if indexed else None
+                    width, height = (sti.width, sti.height) if isinstance(sti, STI16) else (sti.sub_header[0]['width'], sti.sub_header[0]['height'])
+                    if width == 180 and height == 144:
+                        self.loaded_sti[0] = sti
                         self.loaded_sti[0].modified = True
-                    elif buffer.high and buffer.height == 36 and buffer.width in [45, 46]:
-                        self.loaded_sti[2] = buffer
+                    elif width == 90 and height == 72:
+                        self.loaded_sti[1] = sti
+                        self.loaded_sti[1].modified = True                  
+                    elif width in [45, 46] and height == 36 :
+                        self.loaded_sti[2] = sti
                         self.loaded_sti[2].modified = True
                     else:
-                        buffer = STI8(file_path)
-                        if buffer.sub_header[0]['width'] == 90 and buffer.sub_header[0]['height'] == 72:
-                            self.loaded_sti[1] = buffer
-                            self.loaded_sti[1].modified = True
-                        elif  buffer.sub_header[0]['height'] == 36 and buffer.sub_header[0]['width'] in [45, 46]:
-                            self.loaded_sti[2] = buffer
-                            self.loaded_sti[2].modified = True
-                        else:
-                            messagebox.showerror("Error", f"Incompatible image resolution: {file_path}")
+                        messagebox.showerror("Error", f"Incompatible image resolution: {file_path}")
                 except Exception as e:
                     messagebox.showerror("Error", f"Failed to process file {file_path}: {str(e)}") 
             else:
