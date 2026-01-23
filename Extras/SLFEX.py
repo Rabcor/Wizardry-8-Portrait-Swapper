@@ -371,67 +371,8 @@ class SLFExtractor:
                     
     
     def save_patch(self):
-        print("Should save patch")
-        items = self.tree.get_children()
-        if not items:
-            messagebox.showwarning("Warning", "No files selected for patching")
-            return
+         messagebox.showinfo("Failed", "Not implemented")
         
-        # Process each selected item
-        for item in items:
-            name, type, addr_hex, size = self.tree.item(item, 'values')
-            
-            # Only process STI files that start with 'MAIN INTERFACE'
-            if name.startswith('MAIN INTERFACE') and name.endswith('.STI'):
-                try:
-                    # Extract the STI file
-                    file_bytes = self.slf.extract(name)
-                    sti = STI8(file_bytes)
-                    
-                    # Process each image in the STI
-                    for i, image_data in enumerate(sti.images):
-                        # Convert bytes to image for processing
-                        width = sti.sub_header[i]['width']
-                        height = sti.sub_header[i]['height']
-                        
-                        # Process pixels (RGBA format)
-                        pixels = []
-                        for j in range(0, len(image_data), 4):
-                            try:
-                                r, g, b, a = image_data[j:j+4]
-                                
-                                # If pixel is fully black (0,0,0,?) make it almost black (1,1,1,?)
-                                if r == 0 and g == 0 and b == 0:
-                                    pixels.extend([1, 1, 1, a])
-                                else:
-                                    pixels.extend([r, g, b, a])
-                            except IndexError:
-                                # Handle case where we don't have enough bytes for a complete pixel
-                                pixels.extend(image_data[j:])  # Add remaining bytes as-is
-                                break
-                            except Exception as e:
-                                # Handle any other errors and skip this pixel
-                                print(f"Error processing pixel at offset {j}: {str(e)}")
-                                # Add the original bytes and continue
-                                pixels.extend(image_data[j:j+4])
-                                continue
-                        
-                        # Update the image data
-                        sti.images[i] = bytes(pixels)
-                    
-                    # Save the modified STI file with full path
-                    save_path = name
-                    sti.save(save_path)
-                    print(f"Successfully saved: {save_path}")
-                    
-                except Exception as e:
-                    #messagebox.showerror("Error", f"Failed to process STI file {name}:\n{str(e)}")
-                    # Continue with next file instead of stopping
-                    continue
-        
-        messagebox.showinfo("Success", "Successfully processed selected STI files")
-
-
     def _find_wiz8_dir(self):
         try:
             possible_dirs = [
