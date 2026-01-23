@@ -18,7 +18,7 @@ You can also download the source and run main.py directly with python.
   - pillow
   - numpy
 - Optional Dependencies:
-  - imagequant (**Strongly** recommended)
+  - imagequant (high quality quantization (improves the final color quality of medium images after importing))
   - tkinterdnd2 (Drag & Drop)
 
 </details>
