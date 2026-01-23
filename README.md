@@ -19,7 +19,7 @@ You can also download the source and run main.py directly with python.
   - imagequant (high quality quantization, improves the final color quality of medium images after importing)
   - tkinterdnd2 (Drag & Drop)
 - Compile Command:
- - `pyinstaller --onefile --hidden-import='PIL._tkinter_finder' --collect-all imagequant --noupx --noconsole main.py`
+  - `pyinstaller --onefile --hidden-import='PIL._tkinter_finder' --collect-all imagequant --noupx --noconsole main.py`
 
 </details>
 
