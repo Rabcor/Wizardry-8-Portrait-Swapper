@@ -48,9 +48,9 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=3641128848
 
 - MHUMM4 is broken
   - because it uses offsets instead of transparency to position the anim data, no plans to fix it.
-  - Here is a  workaround:
-    - edit another portrait
-    - extract as STI
+  - Workaround:
+    - Edit another portrait
+    - Extract as STI
     - Import the STI to HUMM4.
 - Importing small portraits for RPCs is broken
   - Fixed in source, but still broken in release. (Functionally it doesn't matter because you never see these images in game)
