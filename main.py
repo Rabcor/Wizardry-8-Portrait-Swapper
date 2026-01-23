@@ -24,7 +24,7 @@ def main():
         else:
             patch_file.path = patch_path
     
-    gui = GUI(slf.portraits, patch_file.content)
+    gui = GUI(fetch_portraits(slf), patch_file.content)
     gui.patch_file = patch_file
     slf = patch_file = None # Clear up some memory, think of the poor.
     gui.root.mainloop()
@@ -48,6 +48,14 @@ def find_wiz8_dir():
     directory = tk.filedialog.askdirectory(title="Select Wizardry 8 Directory")
     return directory
 
+def fetch_portraits(slf):
+    return {
+        filename: slf.data[addr:addr+size]
+        for filename, (addr, size) in slf.files.items()
+        if filename.startswith("PORTRAITS")
+    }
+
+    
 if __name__ == "__main__":
     main()
 
