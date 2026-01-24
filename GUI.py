@@ -129,7 +129,10 @@ class GUI:
         self.save_button.grid(row=1, column=0, columnspan=2, pady=10, padx=5, sticky=tk.SE)
         
         self.change_button = ttk.Button(main_frame, text="Change Portrait", command=self.change_portrait)
-        self.change_button.grid(row=1, column=1, pady=10, sticky=tk.SE, padx=140)
+        if sys.platform == "win32":
+            self.change_button.grid(row=1, column=1, pady=10, sticky=tk.SE, padx=130)
+        else:
+            self.change_button.grid(row=1, column=1, pady=10, sticky=tk.SE, padx=140)
         
         self.extract_button = ttk.Button(main_frame, text="Extract", command=self.extract)
         self.extract_button.grid(row=1, column=1, pady=10, sticky=tk.SW, padx=5)
@@ -319,6 +322,9 @@ class GUI:
             if not files:return
         files = sorted(files)    
         index = 0
+        large_modified = False
+        medium_modified = False
+        small_modified = False
         
         # Process each file
         for file_path in files:
@@ -330,31 +336,40 @@ class GUI:
                     
                     # Handle large portraits (180x144)
                     if width == 180 and height == 144:
-                        if img.mode == 'RGBA':
+                        if img.mode != 'RGB':
                             img = img.convert('RGB')
                         raw_data = list(img.getdata())
                         self.loaded_sti[0].image = bytes(pixel for rgb in raw_data for pixel in rgb)
-                        self.loaded_sti[0].modified = True
+                        large_modified = True
     
                     # Handle medium portraits (90x72)
                     elif width == 90 and height == 72:
-                        if len(files) <= 3: index = self.medium_image_index
+                        if len(files) < 2: index = self.medium_image_index
                         if img.mode != 'RGBA':
                             img = img.convert('RGBA')
                         raw_data = list(img.getdata())
                         self.loaded_sti[1].images[index] = [pixel for rgb in raw_data for pixel in rgb]
-                        self.loaded_sti[1].modified = True
+                        medium_modified = True
                         index += 1
+                        
                         
                     # Handle small portraits (45x36 or 46x36)
                     elif height == 36 and width in [45, 46]:
-                        if img.mode == 'RGBA':
-                            img = img.convert('RGB')
-                        raw_data = list(img.getdata())
-                        self.loaded_sti[2].image = bytes(pixel for rgb in raw_data for pixel in rgb)   
-                        self.loaded_sti[2].width = width
-                        self.loaded_sti[2].height = height
-                        self.loaded_sti[2].modified = True
+                        if self.loaded_sti[2].high:
+                            if img.mode != 'RGB':
+                                img = img.convert('RGB')
+                            raw_data = list(img.getdata())
+                            self.loaded_sti[2].image = bytes(pixel for rgb in raw_data for pixel in rgb)   
+                            self.loaded_sti[2].width = width
+                            self.loaded_sti[2].height = height
+                        elif self.loaded_sti[2].indexed:
+                            if img.mode != 'RGBA':
+                                img = img.convert('RGBA')
+                            raw_data = list(img.getdata())
+                            self.loaded_sti[2].images[0] = bytes(pixel for rgb in raw_data for pixel in rgb)  
+                            self.loaded_sti[2].sub_header[0]['width'] = width
+                            self.loaded_sti[2].sub_header[0]['height'] = height
+                        small_modified = True
                     else:
                         messagebox.showerror("Error", f"Incompatible image resolution: {file_path}")
                 except Exception as e:
@@ -369,13 +384,10 @@ class GUI:
                     width, height = (sti.width, sti.height) if isinstance(sti, STI16) else (sti.sub_header[0]['width'], sti.sub_header[0]['height'])
                     if width == 180 and height == 144:
                         self.loaded_sti[0] = sti
-                        self.loaded_sti[0].modified = True
                     elif width == 90 and height == 72:
-                        self.loaded_sti[1] = sti
-                        self.loaded_sti[1].modified = True                  
+                        self.loaded_sti[1] = sti                 
                     elif width in [45, 46] and height == 36 :
                         self.loaded_sti[2] = sti
-                        self.loaded_sti[2].modified = True
                     else:
                         messagebox.showerror("Error", f"Incompatible image resolution: {file_path}")
                 except Exception as e:
@@ -389,8 +401,13 @@ class GUI:
         if hasattr(self.loaded_sti[2], 'image'):
             self.display_image(self.loaded_sti[2].image, self.small_canvas, self.loaded_sti[2].width, self.loaded_sti[2].height)
         else:
-            self.display_image(self.loaded_sti[2].images, self.small_canvas, self.loaded_sti[2].width, self.loaded_sti[2].height)
-
+            self.display_image(self.loaded_sti[2].images, self.small_canvas, self.loaded_sti[2].sub_header[0]['width'], self.loaded_sti[2].sub_header[0]['height'])
+        if large_modified:
+            self.modded_portraits[self.cached_keys[0]] = self.loaded_sti[0].save()
+        if medium_modified:
+            self.modded_portraits[self.cached_keys[1]] = self.loaded_sti[1].save()
+        if small_modified:
+            self.modded_portraits[self.cached_keys[2]] = self.loaded_sti[2].save()
       
     def restore_defaults(self):
         # Create custom dialog window
@@ -461,7 +478,7 @@ class GUI:
         dialog = tk.Toplevel(self.root)
         dialog.title("Extract As...")
         if sys.platform == "win32":
-            dialog.geometry("500x190")
+            dialog.geometry("500x180")
         else:
             dialog.geometry("500x200")
         dialog.configure(bg=self.bg_color)
@@ -589,21 +606,6 @@ class GUI:
     def save(self):
         if self.patch_file:
             try:
-                # Large portrait
-                if hasattr(self.loaded_sti[0], 'save') and self.loaded_sti[0].modified:
-                    print(f"Info: Saving {self.cached_keys[0]}")
-                    self.modded_portraits[self.cached_keys[0]] = self.loaded_sti[0].save()
-                
-                # Medium portrait
-                if hasattr(self.loaded_sti[1], 'save') and self.loaded_sti[1].modified:
-                    print(f"Info: Saving {self.cached_keys[1]}")
-                    self.modded_portraits[self.cached_keys[1]] = self.loaded_sti[1].save()
-           
-                # Small portrait
-                if hasattr(self.loaded_sti[2], 'save') and self.loaded_sti[2].modified:
-                    print(f"Info: Saving {self.cached_keys[2]}")               
-                    self.modded_portraits[self.cached_keys[2]] = self.loaded_sti[2].save()
-                    
                 # Save the patch file
                 self.patch_file.content = self.modded_portraits
                 result = self.patch_file.save()
