@@ -255,6 +255,8 @@ class GUI:
                         width, height = self.loaded_sti[i].sub_header[0]['width'], self.loaded_sti[i].sub_header[0]['height']
                     
                     self.display_image(image, canvas, width, height)
+                self.alpha_value['text'] = '#{:02x}{:02x}{:02x}'.format(*self.loaded_sti[1].palette[0])
+                self.alpha_value.config(fg=self.alpha_value['text'])
             else:
                 # Cycle medium portraits (when slider is moved)
                 self.medium_image_count = self.loaded_sti[1].num_images
