@@ -144,8 +144,8 @@ class STI8:
                     r = output_palette[i]
                     g = output_palette[i+1]
                     b = output_palette[i+2]
-                    palette.append((r, g, b))
-            
+                    if r == 0 and g == 0 and b == 0: r = g = b = 1 # Prevent 100% black, because it's transparent.
+                    palette.append((r, g, b))         
 
                 rgba_bytes = bytearray(width * height * 4)
                 for i, idx in enumerate(output_indices):
@@ -175,7 +175,6 @@ class STI8:
                 palette = palette_img.getpalette()[:254*3]
                 palette = [tuple(palette[i:i+3]) for i in range(0, len(palette), 3)]
                 palette.insert(0, alpha)
-                palette[1] = (255,0,0)
                 palette.append(end)
                 self.atlas = palette_img.convert('RGBA').tobytes()
                 
