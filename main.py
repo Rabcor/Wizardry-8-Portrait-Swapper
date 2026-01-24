@@ -19,11 +19,8 @@ def main():
         patch_file = PATCH(patch_path)
     else:
         patch_file = PATCH()
-        if sys.platform != "win32":
-            patch_file.path = f"Z:{gamedir.replace('/', '\\')}\\Patches\\PATCH.010" # Windows style path for linux/wine support
-        else:
-            patch_file.path = patch_path
-    
+    patch_file.path = patch_path
+            
     gui = GUI(fetch_portraits(slf), patch_file.content)
     gui.patch_file = patch_file
     slf = patch_file = None # Clear up some memory, think of the poor.
