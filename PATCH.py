@@ -6,7 +6,7 @@ class PATCH():
     def __init__(self, source: str | bytes | None = None):   
         # Header Init
         self.content = {}
-        self.path = '' 			# This is not actually important, despite the pointless work I put into making sure it gets done right.
+        self.path = '' 			# This is not actually important.
         self.dataptr = 'Data\\' # This is important though.
         self.num_files = 0
         self.unknown = 33619967 #0200ffff LE, No idea what this is
@@ -95,33 +95,8 @@ class PATCH():
 
         all_bytes = header + content_bytes + footer_bytes
 
-        def _fix_case(path, filename="/PATCH.010"): # For linux
-            if os.path.exists(path): return path
-            parts = path.split(os.sep)
-            correct = ""
-            for i, part in enumerate(parts):
-                if i == 0 and part == '': correct = os.sep; continue
-                search = correct + os.sep + part if correct else part
-                if os.path.exists(search): correct = search
-                else:
-                    parent = os.path.dirname(search)
-                    if parent and os.path.exists(parent):
-                        for item in os.listdir(parent):
-                            if item.lower() == part.lower():
-                                correct = os.path.join(parent, item)
-                                break
-            if not correct.endswith(filename): correct += filename # os can't find it if the file doesn't already exist.
-            return correct
-
         if output_file is None:
             output_file = self.path
-            if sys.platform != "win32":
-                # Convert Wine path to Linux path
-                if output_file.startswith('Z:\\'):
-                    output_file = '/' + output_file[3:].replace('\\', '/') 
-                output_file = _fix_case(output_file)
-                output_file = output_file.replace('\\', '/')
-                output_file = output_file.replace('//', '/') # Weird corner case, it's not really necessary because python recovers automatically from it, but just in case...
          
         if len(self.content.keys()) == 0:
             try:
