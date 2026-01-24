@@ -46,14 +46,12 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=3641128848
 
 # Known issues
 
-- MHUMM4 is broken
-  - because it uses offsets instead of transparency to position the anim data, no plans to fix it.
+- Importing MHUMM4 is broken
+  - Because it uses offsets instead of transparency to position the anim data, no plans to fix it.
   - Workaround:
     - Edit another portrait
     - Extract as STI
     - Import the STI to HUMM4.
-- Importing small portraits for RPCs is broken
-  - Fixed in source, but still broken in release. (Functionally it doesn't matter because you never see these images in game)
 - Drag & Drop can be wonky on wayland
   - Wayland is broken, who could have guessed? Just use the change portrait filedialog instead if you've got problems, this kind of scenario is what it's there for.
 
@@ -61,6 +59,6 @@ If you encounter a problem that's not one of the above, please report the issue.
 
 # Extras
 
-SLFEX is an SLF file parser, primarily geared towards reading SLF files and displaying info about it's contents, as well as extracting those contents.
+SLFEX is an SLF file parser, primarily geared towards reading SLF files and displaying info about it's contents, as well as extracting those contents. It's untested on windows.
 <img width="1280" height="800" alt="image" src="https://github.com/user-attachments/assets/5d3a24c7-be1a-4981-aab1-faf3ae4749db" />
 It's only partially complete, it can swap out the contents of most TGA files and to a limited degree STI files as well (STI16 fully supported, STI8 only properly supported if all images are the same size), it can display the contents of all those files properly though which can be a boon for modding when you are looking for a specific texture you want to replace. The utility isn't 100% complete, it relies on the other classes to function so run it from the same directory as you would main.py.
