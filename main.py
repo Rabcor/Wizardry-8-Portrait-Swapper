@@ -31,7 +31,8 @@ def find_wiz8_dir():
     possible_dirs = [
         ".",
         "..",
-        os.path.expanduser("~/.local/share/Steam/steamapps/common/Wizardry8"),  # Linux Steam    
+        os.path.expanduser("~/.local/share/Steam/steamapps/common/Wizardry8"),
+        os.path.expanduser("~/.wine/drive_c/GOG Games/Wizardry 8"),
         os.path.expanduser("%USERPROFILE%\\Steam\\steamapps\\common\\Wizardry8"),
         "C:\\GOG Games\\Wizardry 8",
         "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Wizardry8",
