@@ -351,9 +351,12 @@ class GUI:
                             img = img.convert('RGBA')
                         raw_data = list(img.getdata())
                         self.loaded_sti[1].images[index] = [pixel for rgb in raw_data for pixel in rgb]
+                        if self.cached_keys[1] == "PORTRAITS\\MEDIUM\\MHUMM4.STI":
+                                self.loaded_sti[1].sub_header[index]['x'] = self.loaded_sti[1].sub_header[index]['y'] = 0
+                                self.loaded_sti[1].sub_header[index]['width'] = width
+                                self.loaded_sti[1].sub_header[index]['height'] = height
                         medium_modified = True
-                        index += 1
-                        
+                        index += 1                        
                         
                     # Handle small portraits (45x36 or 46x36)
                     elif height == 36 and width in [45, 46]:
