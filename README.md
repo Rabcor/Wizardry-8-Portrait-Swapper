@@ -46,7 +46,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=3641128848
 
 # Known issues
 
-- Importing MHUMM4 is broken
+- Importing MHUMM4 is broken (Fixed in source)
   - Because it uses offsets instead of transparency to position the anim data, no plans to fix it.
   - Workaround:
     - Edit another portrait
