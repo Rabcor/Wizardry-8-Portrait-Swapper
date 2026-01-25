@@ -21,6 +21,7 @@ def main():
         patch_file = PATCH()
     patch_file.path = patch_path
             
+    
     gui = GUI(fetch_portraits(slf), patch_file.content)
     gui.patch_file = patch_file
     slf = patch_file = None # Clear up some memory, think of the poor.
@@ -30,8 +31,11 @@ def find_wiz8_dir():
     possible_dirs = [
         ".",
         "..",
-        os.path.expanduser("~/.local/share/Steam/steamapps/common/Wizardry8"),  # Linux Steam
-        os.path.expanduser("%USERPROFILE%\\Steam\\steamapps\\common\\Wizardry8"),  # Windows Steam
+        os.path.expanduser("~/.local/share/Steam/steamapps/common/Wizardry8"),  # Linux Steam    
+        os.path.expanduser("%USERPROFILE%\\Steam\\steamapps\\common\\Wizardry8"),
+        "C:\\GOG Games\\Wizardry 8",
+        "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Wizardry8",
+        "C:\\Program Files\\Steam\\steamapps\\common\\Wizardry8",
         "C:\\Steam\\steamapps\\common\\Wizardry8",
         "C:\\SteamLibrary\\steamapps\\common\\Wizardry8",
         "D:\\SteamLibrary\\steamapps\\common\\Wizardry8",
