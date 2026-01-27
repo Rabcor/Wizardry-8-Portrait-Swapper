@@ -613,6 +613,7 @@ class GUI:
             try:
                 # Save the patch file
                 self.patch_file.content = self.modded_portraits
+                print("Saving:\n\t" + "\n\t".join([key.split("\\")[-1].replace(".STI","")[1:] for key in self.patch_file.content.keys() if key.startswith("PORTRAITS\\LARGE\\L")]))
                 result = self.patch_file.save()
                 messagebox.showinfo(result[0], result[1])
                 
