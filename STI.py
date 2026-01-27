@@ -73,7 +73,7 @@ class STI8:
         self.atlas = new_atlas  
              
         
-    def _update_subheader(self, compressed_data):
+    def _update_subheader(self, compressed_data): # Because raw image bytes contain no information about dimensions, any updates to the resolution and offset must be done in the code that changes the image, it cannot be handled here.
         if self.etrle and self.indexed:
             current_pos = 0
             for i in range(self.num_images):
@@ -128,7 +128,6 @@ class STI8:
         color_count = len(unique_pixels)
     
         if color_count > 254:
-            print("\tInfo: Quantizing image...")
             try: # To use libimagequant for quantization
                 import imagequant
                 output_indices, output_palette = imagequant.quantize_raw_rgba_bytes(
@@ -170,7 +169,7 @@ class STI8:
                 self.palette = palette
                 return
             except: # Fallback to pillow for quantization, not only is the quantization method worse, the code is also worse. Works tho, just generates suboptimal palettes.
-                print("\tWarning: Quantizing with libimagequant failed, falling back to pillow...")
+                print("Warning: Quantizing with libimagequant failed, falling back to pillow...")
                 palette_img = rgb_atlas.quantize(colors=254, method=1)
                 palette = palette_img.getpalette()[:254*3]
                 palette = [tuple(palette[i:i+3]) for i in range(0, len(palette), 3)]
@@ -191,9 +190,9 @@ class STI8:
             # Add padding if needed to make it 254 colors before adding alpha and end
             padding_needed = 254 - color_count
             if padding_needed > 0:
-                padding = np.zeros((padding_needed, 3), dtype=unique_pixels.dtype)
+                padding = np.ones((padding_needed, 3), dtype=unique_pixels.dtype)
                 unique_pixels = np.vstack([unique_pixels, padding]) 
-        print("Info: Image was already quantized")                
+        print("Info: Image was already quantized.")                
         palette += [tuple(int(x) for x in pixel) for pixel in unique_pixels]
         palette.append(end)
         total_matches = sum((Counter(palette) & Counter(self.palette)).values())
