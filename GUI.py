@@ -17,6 +17,7 @@ class GUI:
 
         # Initialize variables
         self.ui_scale = max(user_screen_width / base_screen_width, 0.75)
+        self.base_dimensions = (940, 480)
         self.aspect_ratio = 1.25 # Aspect ratio for canvases and images, not the app.
         self.default_portraits = default_portraits
         self.modded_portraits = modded_portraits
@@ -38,11 +39,15 @@ class GUI:
         # Window setup
         root = self.root
         root.title("Wizardry 8 Portrait Swapper")
-        width = int(940 * self.ui_scale)
-        height = int(480 * self.ui_scale)
+        width = int(self.base_dimensions[0] * self.ui_scale)
+        height = int(self.base_dimensions[1] * self.ui_scale)
+        winaspect = width / height
         root.geometry(f"{width}x{height}")
-        root.resizable(False, False)
+        root.resizable(True, False)
         root.configure(bg=self.bg_color)
+        root.minsize(705, 360)
+        self._resize_job = None
+        root.bind("<Configure>", lambda e: self.resize_event(e, winaspect))
         self.center_window(root)
         
         try:
@@ -63,7 +68,6 @@ class GUI:
         style = ttk.Style()
         style.theme_use('alt')
         style.configure("Dark.TFrame", background=self.bg_color)
-        style.configure("Dark.TLabel", background=self.bg_color, foreground=self.fg_color, font=("Segoe UI", self.font_size))
 
         
         # Listbox
@@ -106,7 +110,7 @@ class GUI:
         self.large_canvas = tk.Canvas(image_frame, width=l_res[0], height=l_res[1], bg='black', highlightthickness=0)
         self.large_canvas.grid(row=1, column=0, padx=2, pady=0, sticky=tk.N)
                 
-        self.medium_canvas = tk.Canvas(image_frame, width=m_res[0], height=m_res[1], bg='grey', highlightthickness=0)
+        self.medium_canvas = tk.Canvas(image_frame, width=m_res[0], height=m_res[1], bg='black', highlightthickness=0)
         self.medium_canvas.grid(row=1, column=1, padx=2, pady=0, sticky=tk.N)
              
         # Medium slider
@@ -125,8 +129,8 @@ class GUI:
         alpha_frame = tk.Frame(image_frame, bg=self.bg_color)
         alpha_frame.grid(row=1, column=1, padx=2, pady=m_res[1] + 60, sticky=tk.N)
         
-        alpha_label = tk.Label(alpha_frame, text="Alpha Color:", bg=self.bg_color, fg=self.fg_color, font=("Segoe UI", self.font_size))
-        alpha_label.pack(side=tk.LEFT)
+        self.alpha_label = tk.Label(alpha_frame, text="Alpha Color:", bg=self.bg_color, fg=self.fg_color, font=("Segoe UI", self.font_size))
+        self.alpha_label.pack(side=tk.LEFT)
 
         self.alpha_value = tk.Label(alpha_frame, text="", bg=self.bg_color, fg=self.fg_color, font=("Segoe UI", self.font_size))
         self.alpha_value.pack(side=tk.LEFT)
@@ -151,8 +155,8 @@ class GUI:
         self.defaults_button = ttk.Button(main_frame, text="Restore Defaults", command=self.restore_defaults)
         self.defaults_button.grid(row=1, column=0, pady=(0, 0), sticky=tk.SW, padx=(10, 0))
 
-
-        
+        self.populate_portrait_listbox()
+        self.load_portraits(self.current_selection)       
         
         # Button styles
         style.configure('TButton', 
@@ -194,13 +198,49 @@ class GUI:
                 background=[('active', self.highlight_color)],
                 troughcolor=[('active', self.highlight_color)])
                        
-
-
-
-        # Populate listbox
-        self.populate_portrait_listbox()
-        self.load_portraits(self.current_selection)        
-
+                        
+    def resize_event(self, event, aspect_ratio):
+        root = self.root
+        if event.widget != root:
+            return
+    
+        new_width = event.width
+        new_height = event.height
+    
+        if new_width / new_height != aspect_ratio:
+            desired_height = int(new_width / aspect_ratio)
+            desired_width = new_width
+        else:
+            desired_width = int(new_height * aspect_ratio)
+            desired_height = new_height
+            
+        
+        if (new_width != desired_width or new_height != desired_height):
+            root.geometry(f"{desired_width}x{desired_height}")
+            self.ui_scale = max(desired_width / self.base_dimensions[0], 0.75)
+            self.font_size = int(12 + self.ui_scale * 2)
+    
+            self.portrait_listbox.config(width=int(self.font_size - self.ui_scale * 2),height=int(12 * self.ui_scale), font=("Segoe UI", self.font_size))
+            canvas_scale = 2 * self.ui_scale
+            canvas_height = 36 * canvas_scale
+            canvas_width = canvas_height * self.aspect_ratio
+            s_res, m_res, l_res = (canvas_width, canvas_height), (canvas_width * 2, canvas_height * 2), (canvas_width * 4, canvas_height * 4)
+    
+            self.large_canvas.config(width=l_res[0], height=l_res[1])
+            self.medium_canvas.config(width=m_res[0], height=m_res[1])
+            self.small_canvas.config(width=s_res[0], height=s_res[1])
+    
+            self.medium_slider.config(length=180 * self.ui_scale, font=("Segoe UI", self.font_size))
+            self.medium_slider.grid(pady=m_res[1])
+    
+            alpha_frame = self.alpha_value.master
+            alpha_frame.grid(pady=m_res[1] + 60)
+            self.alpha_label.config(font=("Segoe UI", self.font_size))
+            self.alpha_value.config(font=("Segoe UI", self.font_size))
+            if hasattr(self, '_resize_job') and self._resize_job is not None:
+                root.after_cancel(self._resize_job)
+            self._resize_job = root.after(50, self.update_canvas) 
+            return "break"
              
     def populate_portrait_listbox(self):
         portrait_names = set()
@@ -316,7 +356,15 @@ class GUI:
     def clear_canvas(self, canvas):
         canvas.delete("all")
         canvas.create_text(100, 100, text="No image")
-        
+
+    def update_canvas(self):
+        self.display_image(self.loaded_sti[0].image, self.large_canvas, self.loaded_sti[0].width, self.loaded_sti[0].height)
+        self.display_image(self.loaded_sti[1].images, self.medium_canvas, self.loaded_sti[1].sub_header[self.medium_image_index]['width'], self.loaded_sti[1].sub_header[self.medium_image_index]['height'])
+        if hasattr(self.loaded_sti[2], 'image'):
+            self.display_image(self.loaded_sti[2].image, self.small_canvas, self.loaded_sti[2].width, self.loaded_sti[2].height)
+        else:
+            self.display_image(self.loaded_sti[2].images, self.small_canvas, self.loaded_sti[2].sub_header[0]['width'], self.loaded_sti[2].sub_header[0]['height'])
+                    
     def refresh(self):
                 self.cached_keys[0] = ''
                 self.load_portraits(self.current_selection)
@@ -408,13 +456,8 @@ class GUI:
             else:
                 messagebox.showerror("Error", f"File is not PNG or STI: {file_path}")                        
                 
-        # Update display
-        self.display_image(self.loaded_sti[0].image, self.large_canvas, self.loaded_sti[0].width, self.loaded_sti[0].height)
-        self.display_image(self.loaded_sti[1].images, self.medium_canvas, self.loaded_sti[1].sub_header[self.medium_image_index]['width'], self.loaded_sti[1].sub_header[self.medium_image_index]['height'])
-        if hasattr(self.loaded_sti[2], 'image'):
-            self.display_image(self.loaded_sti[2].image, self.small_canvas, self.loaded_sti[2].width, self.loaded_sti[2].height)
-        else:
-            self.display_image(self.loaded_sti[2].images, self.small_canvas, self.loaded_sti[2].sub_header[0]['width'], self.loaded_sti[2].sub_header[0]['height'])
+        self.update_canvas()
+        
         if medium_modified:
             self.modded_portraits[self.cached_keys[1]] = self.loaded_sti[1].save()
 
