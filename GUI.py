@@ -18,6 +18,7 @@ class GUI:
         # Initialize variables
         self.ui_scale = max(user_screen_width / base_screen_width, 0.75)
         self.base_dimensions = (940, 480)
+        self.min_dimensions = tuple(int(dim * 0.75) for dim in self.base_dimensions)
         self.aspect_ratio = 1.25 # Aspect ratio for canvases and images, not the app.
         self.default_portraits = default_portraits
         self.modded_portraits = modded_portraits
@@ -45,9 +46,9 @@ class GUI:
         root.geometry(f"{width}x{height}")
         root.resizable(True, False)
         root.configure(bg=self.bg_color)
-        root.minsize(705, 360)
         self._resize_job = None
         root.bind("<Configure>", lambda e: self.resize_event(e, winaspect))
+        root.minsize(self.min_dimensions[0], self.min_dimensions[1])
         self.center_window(root)
         
         try:
@@ -206,13 +207,14 @@ class GUI:
     
         new_width = event.width
         new_height = event.height
+        min_width, min_height = self.min_dimensions[0],self.min_dimensions[1]
     
         if new_width / new_height != aspect_ratio:
-            desired_height = int(new_width / aspect_ratio)
-            desired_width = new_width
+            desired_height = max(int(new_width / aspect_ratio), min_height)
+            desired_width = max(new_width, min_width)
         else:
-            desired_width = int(new_height * aspect_ratio)
-            desired_height = new_height
+            desired_width = max(int(new_height * aspect_ratio),min_height)
+            desired_height = max(new_height, min_height)
             
         
         if (new_width != desired_width or new_height != desired_height):
