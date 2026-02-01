@@ -41,21 +41,8 @@ Portraits come in 3 sizes
 - Small: 45x36
 
 
-More detailed guide:
+More detailed usage guide:
 https://steamcommunity.com/sharedfiles/filedetails/?id=3641128848
-
-# Known issues
-
-- Importing MHUMM4 is broken (Fixed in source)
-  - Because it uses offsets instead of transparency to position the anim data:
-  - Workaround:
-    - Edit another portrait
-    - Extract as STI
-    - Import the STI to HUMM4.
-- Drag & Drop can be wonky on wayland
-  - Wayland is broken, who could have guessed? Just use the change portrait filedialog instead if you've got problems, this kind of scenario is what it's there for.
-
-If you encounter a problem that's not one of the above, please report the issue.
 
 # Extras
 
