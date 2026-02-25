@@ -103,7 +103,9 @@ class STI8:
         alpha_mask = (buffer[:, :, 3] == 0)
         buffer[alpha_mask, :3] = self.palette[0]
         black_mask = (buffer[:, :, 0] == 0) & (buffer[:, :, 1] == 0) & (buffer[:, :, 2] == 0)
-        buffer[black_mask, :3] = [1, 1, 1]        
+        buffer[black_mask, :3] = [1, 1, 1]
+        if width == 90 and height == 720: # Dogshit way to check if we're working with a portrait.
+            buffer[:72, :, :3][alpha_mask[:72, :]] = [1, 1, 1] # Convert transparent pixels to black pixels for the base portrait to prevent issues.
         self.atlas = buffer.tobytes()
 
     def _quantize_atlas(self):
